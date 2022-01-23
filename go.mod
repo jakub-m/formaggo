@@ -1,4 +1,4 @@
-module formaggo
+module github.com/jakub-m/formaggo
 
 go 1.17
 

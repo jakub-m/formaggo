@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	fo "formaggo/state"
+
+	fo "github.com/jakub-m/formaggo/state"
 )
 
 // You have a 3-gallon and a 5-gallon jug that you can fill from a fountain of water.  Fill one of the jugs with

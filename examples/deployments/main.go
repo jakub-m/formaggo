@@ -6,7 +6,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	sta "formaggo/state"
+
+	sta "github.com/jakub-m/formaggo/state"
 )
 
 const (

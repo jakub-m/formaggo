@@ -2,8 +2,10 @@ package state
 
 import (
 	"fmt"
-	"formaggo/log"
-	spa "formaggo/shortestpath"
+
+	"github.com/jakub-m/formaggo/log"
+
+	spa "github.com/jakub-m/formaggo/shortestpath"
 
 	"github.com/mitchellh/hashstructure/v2"
 )
@@ -45,10 +47,12 @@ type NamedTransition struct {
 }
 
 func (c Checker) Run() (StateGraph, *Violation) {
+	log.Println("Start checker")
 	graph, violation := c.runTransitions()
 	if violation != nil {
 		return graph, violation
 	}
+	log.Printf("Done generating graph of size: %d\n", graph.NumStates())
 	violation = c.runTemporalChecks(graph)
 	return graph, violation
 }
@@ -60,18 +64,18 @@ func (c Checker) runTransitions() (StateGraph, *Violation) {
 	}
 
 	initialState := c.InitialState
-	log.Println("init", initialState)
+	log.Debugln("init", initialState)
 	initialStateHash := GetHash(initialState)
 	sg.hashToState[initialStateHash] = initialState
 	backlog := []stateHash{initialStateHash}
 	for len(backlog) > 0 {
-		log.Printf("backlog %d", len(backlog))
+		log.Debugf("backlog %d", len(backlog))
 		currHash := backlog[len(backlog)-1]
 		backlog = backlog[0 : len(backlog)-1]
 
 		if _, ok := sg.hashGraph[currHash]; ok {
 			// The state was already processed, all the transisitons are in the map. No need to do it again.
-			log.Printf("continue")
+			log.Debugf("continue")
 			continue
 		}
 
@@ -79,7 +83,7 @@ func (c Checker) runTransitions() (StateGraph, *Violation) {
 		if !ok {
 			panic(fmt.Sprintf("RATS! hashToState does not have a corresponding entry: %v", currHash))
 		}
-		log.Printf("curr %v", curr)
+		log.Debugf("curr %v", curr)
 
 		nextStateHashSet := make(map[stateHash]interface{})
 		for _, namTran := range c.NamedTransitions {
@@ -96,7 +100,7 @@ func (c Checker) runTransitions() (StateGraph, *Violation) {
 		nextStateHashes := []stateHash{}
 		for nextHash, next := range nextStateHashSet {
 			sg.hashToState[nextHash] = next
-			log.Printf("%v -> %v", curr, next)
+			log.Debugf("%v -> %v", curr, next)
 
 			nextStateHashes = append(nextStateHashes, nextHash)
 
@@ -125,12 +129,14 @@ func (c Checker) runTransitions() (StateGraph, *Violation) {
 		sg.hashGraph[currHash] = nextStateHashes
 	}
 
-	log.Printf("all hashshes: %d", len(sg.hashToState))
+	log.Debugf("all hashshes: %d", len(sg.hashToState))
 	return sg, nil
 }
 
 func (c Checker) runTemporalChecks(g StateGraph) *Violation {
+	log.Println("Now check temporal properties")
 	for _, prop := range c.NamedProperties {
+		log.Printf("%s\n", prop.Name)
 		if counterExample := prop.Property.Prop(g, prop.Property.Initial, prop.Property.Terminal); counterExample != nil {
 			return &Violation{
 				Prop:             &prop,

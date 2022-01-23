@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	fo "formaggo/state"
+
+	fo "github.com/jakub-m/formaggo/state"
 )
 
 // From https://learntla.com/introduction/example/

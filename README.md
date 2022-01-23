@@ -1,6 +1,6 @@
 # 🧀 Formaggo. A cheesy exhaustive state checker in Go.
 
-Formaggo is a simple model changes inspired by TLA+. The checker and the models
+Formaggo is a simple model checker inspired by TLA+. The checker and the models
 are written in Go, compiled and run as a single binary.
 
 A model is specified as a set of Transitions. A transition is a function that
@@ -8,11 +8,15 @@ takes a State on input and that returns possible states on output.  The checker
 then builds a graph of all the possible states and reports violations of
 Invariants and Properties.
 
-The State is an arbitrary primitive or structure (an `interface{}`) that can be
-hashed. Important! Private fields (the ones starting with the lower case) are
-IGNORED when calculating hash.
+The State is an arbitrary primitive or structure (an `interface{}`).
 
-State hash is calculated using [mitchellh/hashstructure][ref_hash]. Tags from
+## Hashing the state
+
+The checker works based on hash, therefore the State must be hashable.
+Important! Private fields (the ones starting with the lower case) are IGNORED
+when calculating hash.
+
+State hash is calculated using [mitchellh/hashstructure][ref_hash].  Tags from
 there apply, in particular:
 
 ```

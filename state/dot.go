@@ -3,14 +3,15 @@ package state
 import (
 	"encoding/json"
 	"fmt"
-	"formaggo/log"
 	"io"
 	"os"
 	"strconv"
+
+	"github.com/jakub-m/formaggo/log"
 )
 
 func (g StateGraph) ExportToDotFile(path string) error {
-	log.Printf("Exporting state graph of size %d to file %s\n", g.NumStates(), path)
+	log.Debugf("Exporting state graph of size %d to file %s\n", g.NumStates(), path)
 	f, err := os.Create(path)
 	if err != nil {
 		return err
